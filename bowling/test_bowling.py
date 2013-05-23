@@ -1,63 +1,53 @@
 #
 # Bowling kata
 #
+import bowling
+import unittest
 
-class Bowling:
-    def __init__(self, rolls):
-        self.rolls = rolls
+class BowlingTest(unittest.TestCase):
+    def test_get_next_roll(self):
+        oo = bowling.Bowling("123-1/X4123412341234")
+        res = oo.getNextRoll(2)
+        self.assertEquals(res, "12")
+        oo = bowling.Bowling("X4123412341234")
+        res = oo.getNextRoll()
+        self.assertEquals(res, "X")
 
-    def compute(self):
-        ret = 0
-        cpt = 0
-        try:
-            while cpt < 10:
-                cpt += 1
-                frame, self.rolls = self.popNextFrame(self.rolls)
-                ret += self.computeScoreForFrame(frame, self.rolls)
-        except Exception, ee:
-            pass
-        return ret
+    def test_next_frame(self):
+        oo = bowling.Bowling("123-1/X4123412341234")
+        res, oo.rolls = oo.popNextFrame(oo.rolls)
+        self.assertEquals(res, "12")
+        res, oo.rolls = oo.popNextFrame(oo.rolls)
+        self.assertEquals(res, "3-")
+        res, oo.rolls = oo.popNextFrame(oo.rolls)
+        self.assertEquals(res, "1/")
+        res, oo.rolls = oo.popNextFrame(oo.rolls)
+        self.assertEquals(res, "X")
+        res, oo.rolls = oo.popNextFrame(oo.rolls)
+        self.assertEquals(res, "41")
 
 
-    def computeScoreForFrame(self, frame, rolls):
-        ret = 0
-        if frame == "X":
-            ret += self.computeScoreForStrike(frame, rolls)
-        elif frame[-1] == "/":
-            ret += self.computeScoreForSpare(frame, rolls)
-        else:
-            ret += self.computeScoreForSimple(frame, rolls)
-        return ret
+    def test_compute_score_for_simple(self):
+        oo = bowling.Bowling("1234")
+        res = oo.computeScoreForSimple("12", oo.rolls)
+        self.assertEquals(res, 3)
+        res = oo.computeScoreForSimple("1-", oo.rolls)
+        self.assertEquals(res, 1)
 
-    def computeScoreForSpare(self, frame, rolls):
-        return 10 + self.computeScoreForFrame(self.getNextRoll(), rolls)
 
-    def computeScoreForStrike(self, frame, rolls):
-        return 10 + self.computeScoreForFrame(self.getNextRoll(2), rolls)
+    def test_compute_score_for_spare(self):
+        oo = bowling.Bowling("34")
+        res = oo.computeScoreForSpare("3/", oo.rolls)
+        self.assertEquals(res, 13)
 
-    def computeScoreForSimple(self, frame, rolls):
-        ret = 0
-        for ii in frame:
-            if ii == "-":
-                pass
-            else:
-                ret += int(ii)
-        return ret
 
-    def popNextFrame(self, rolls):
-        if rolls[0] == "X":
-            ret = rolls[0]
-            rolls = rolls[1:]
-            return ret, rolls
-        else:
-            ret = rolls[:2]
-            rolls = rolls[2:]
-            return ret, rolls
+    def test_compute_score_for_strike(self):
+        oo = bowling.Bowling("34")
+        res = oo.computeScoreForStrike("X", oo.rolls)
+        self.assertEquals(res, 17)
 
-    def getNextRoll(self, number = 1):
-        return self.rolls[:number]
 
 if __name__ == "__main__":
-    pass
+    unittest.main()
 
 # EOF
